@@ -2,6 +2,7 @@ package com.biometryczne.signature.controllers;
 
 import com.biometryczne.signature.controllers.actions.CloseWindowAction;
 import com.biometryczne.signature.controllers.actions.ControllerActionManager;
+import com.biometryczne.signature.nodes.JavaFXPenNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +16,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Almi on 2016-05-09.
  */
-public class MainWindowController implements Initializable, PenListener {
+public class MainWindowController implements Initializable {
 
 
     //Referencja do głównego okna programu. Zwykle potrzebna ;)
@@ -25,29 +26,8 @@ public class MainWindowController implements Initializable, PenListener {
     private ControllerActionManager actionManager = new ControllerActionManager();
 
     public void initialize(URL location, ResourceBundle resources) {
-
-    }
-
-    public void penButtonEvent(PButtonEvent ev) {
-        System.out.println(ev);
-    }
-
-    public void penKindEvent(PKindEvent ev) {
-        System.out.println(ev);
-    }
-
-    public void penLevelEvent(PLevelEvent ev) {
-        System.out.println(ev);
-        System.out.println("Pressure = " + ev.pen.getLevelValue(PLevel.Type.PRESSURE));
-    }
-
-    public void penScrollEvent(PScrollEvent ev) {
-        System.out.println(ev);
-
-    }
-
-    public void penTock(long availableMillis) {
-        System.out.println("TOCK - available period fraction: "+availableMillis);
+        //dodaj FX Pen'a
+        mainWindow.setCenter(new JavaFXPenNode());
     }
 
     @FXML
