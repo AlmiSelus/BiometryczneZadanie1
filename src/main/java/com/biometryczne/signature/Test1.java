@@ -1,3 +1,5 @@
+package com.biometryczne.signature;
+
 import jpen.*;
 import jpen.demo.StatusReport;
 import jpen.event.PenListener;
