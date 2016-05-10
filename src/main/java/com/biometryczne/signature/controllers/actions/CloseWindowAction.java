@@ -9,9 +9,11 @@ import javafx.stage.Stage;
 public class CloseWindowAction implements IControllerAction {
 
     @Override
-    public void perform(Pane mainPane) {
+    public Void perform(Pane mainPane) {
         Stage stage = (Stage)mainPane.getScene().getWindow();
         stage.close();
+
+        return null;
     }
 
 }

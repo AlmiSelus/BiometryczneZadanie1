@@ -2,6 +2,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuItem?>
+<?import com.biometryczne.signature.nodes.JavaFXPenNode?>
 <BorderPane fx:id="mainWindow" xmlns:fx="http://javafx.com/fxml" fx:controller="com.biometryczne.signature.controllers.MainWindowController">
     <top>
         <MenuBar>
@@ -13,11 +14,14 @@
                 </Menu>
                 <Menu text="Edit">
                     <items>
-                        <MenuItem text="Edytuj podpisy użytkownika"/>
-                        <MenuItem text="Wyczyść panel podpisu"/>
+                        <MenuItem text="Edytuj podpisy użytkownika" onAction="#editSignature"/>
+                        <MenuItem text="Wyczyść panel podpisu" onAction="#clearSignatureCanvas"/>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
     </top>
+    <center>
+        <JavaFXPenNode fx:id="mainSignatureCanvas" id="mainSignatureCanvas"/>
+    </center>
 </BorderPane>

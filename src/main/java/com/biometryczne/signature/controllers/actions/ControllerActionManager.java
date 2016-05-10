@@ -5,16 +5,16 @@ import javafx.scene.layout.Pane;
 /**
  * Created by Michal Stasiak on 2016-01-31.
  */
-public class ControllerActionManager implements IControllerAction {
+public class ControllerActionManager<R> implements IControllerAction<R> {
 
-    private IControllerAction controllerActionItem;
+    private IControllerAction<R> controllerActionItem;
 
     public void setPerformer(final IControllerAction controllerActionItem) {
         this.controllerActionItem = controllerActionItem;
     }
 
     @Override
-    public void perform(Pane mainPane) {
-        controllerActionItem.perform(mainPane);
+    public R perform(Pane mainPane) {
+        return controllerActionItem.perform(mainPane);
     }
 }
