@@ -15,12 +15,7 @@ public class ActionsTest {
     public void testStringResponse() {
         final String expected = "This is expected";
         ControllerActionManager<String> controllerActionManager = new ControllerActionManager<String>();
-        controllerActionManager.setPerformer(new IControllerAction<String>() {
-            @Override
-            public String perform(Pane mainPane) {
-                return expected;
-            }
-        });
+        controllerActionManager.setPerformer(mainPane -> expected);
 
         String response = controllerActionManager.perform(new Pane());
         assertEquals(expected, response);
@@ -32,14 +27,11 @@ public class ActionsTest {
 
         final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
-        controllerActionManager.setPerformer(new IControllerAction() {
-            @Override
-            public Object perform(Pane mainPane) {
+        controllerActionManager.setPerformer(mainPane -> {
 
-                atomicBoolean.getAndSet(true);
+            atomicBoolean.getAndSet(true);
 
-                return null;
-            }
+            return null;
         });
 
         controllerActionManager.perform(new Pane());

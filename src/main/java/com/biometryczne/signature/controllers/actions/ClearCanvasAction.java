@@ -15,10 +15,8 @@ public class ClearCanvasAction implements IControllerAction {
     @Override
     public Void perform(Pane mainPane) {
 
-        log.info("hehehe");
-
         JavaFXPenNode penNode = (JavaFXPenNode)mainPane.getScene().lookup("#mainSignatureCanvas");
-        penNode.clearCanvas();
+        penNode.clearSignatureData();
 
         return null;
     }

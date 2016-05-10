@@ -1,31 +1,43 @@
 package com.biometryczne.signature;
 
+import com.biometryczne.signature.utils.SignatureCharacteristics;
+import jpen.PLevel;
 import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
+import java.awt.geom.Arc2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Adi on 2016-05-10.
  */
 public class Signature {
 
-    String name;
-    public ArrayList<Float> x; //pozycja x
-    public ArrayList<Float> y; //pozycja y
-    public ArrayList<Float> p; //nacisk
-    public ArrayList<Float> t; //dziko troche, ale to numer probki
+    private String name;
+    private Map<SignatureCharacteristics, List<Double>> characteristics = new HashMap<>();
 
-
-    public Signature ()
-    {
-        String name= "new";
-        x = new ArrayList<Float>();
-        y = new ArrayList<Float>();
-        p = new ArrayList<Float>();
-        t = new ArrayList<Float>();
+    public Signature () {
+        name = "new";
+        characteristics.put(SignatureCharacteristics.X, new ArrayList<>());
+        characteristics.put(SignatureCharacteristics.Y, new ArrayList<>());
+        characteristics.put(SignatureCharacteristics.PRESSURE, new ArrayList<>());
     }
 
+    public void add(double value, SignatureCharacteristics type) {
+        characteristics.get(type).add(value);
+    }
 
+    public List<Double> get(SignatureCharacteristics type) {
+        return characteristics.get(type);
+    }
+
+    public void clearAll() {
+        for(Map.Entry<SignatureCharacteristics, List<Double>> entry : characteristics.entrySet()) {
+            entry.getValue().clear();
+        }
+    }
 
 
 }
