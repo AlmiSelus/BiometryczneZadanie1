@@ -1,0 +1,5 @@
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane fx:id="editPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.biometryczne.signature.controllers.EditSignatureWindowController">
+
+
+</BorderPane>

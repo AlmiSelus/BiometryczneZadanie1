@@ -3,6 +3,7 @@ package com.biometryczne.signature.controllers;
 import com.biometryczne.signature.controllers.actions.ClearCanvasAction;
 import com.biometryczne.signature.controllers.actions.CloseWindowAction;
 import com.biometryczne.signature.controllers.actions.ControllerActionManager;
+import com.biometryczne.signature.controllers.actions.EditSignatureAction;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,6 +44,8 @@ public class MainWindowController implements Initializable {
     @FXML
     public void editSignature(ActionEvent actionEvent) {
         log.info("Edit signature");
+        actionManager.setPerformer(new EditSignatureAction());
+        actionManager.perform(mainWindow);
     }
 
     @FXML

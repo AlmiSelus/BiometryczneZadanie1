@@ -3,7 +3,6 @@ package com.biometryczne.signature.nodes;
 import javafx.embed.swing.SwingNode;
 import jpen.*;
 import jpen.event.PenListener;
-import jpen.owner.awt.AwtPenOwner;
 import jpen.owner.multiAwt.AwtPenToolkit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
