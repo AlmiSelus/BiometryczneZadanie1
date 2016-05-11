@@ -26,8 +26,8 @@
         <module name="Biometryczne-Zadanie1" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Biometryczne-Zadanie1" target="1.6" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Biometryczne-Zadanie1" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -60,7 +60,9 @@ public class MainWindowController implements Initializable {
         LineChart<Number, Number> XPosition = createLineChart(mainSignatureCanvas, "Pozycja na osi X", SignatureCharacteristics.X);
         LineChart<Number, Number> YPosition = createLineChart(mainSignatureCanvas, "Pozycja na osi Y", SignatureCharacteristics.Y);
         LineChart<Number, Number> PPosition = createLineChart(mainSignatureCanvas, "Nacisk", SignatureCharacteristics.PRESSURE);
-
+        XPosition.setCreateSymbols(false);
+        YPosition.setCreateSymbols(false);
+        PPosition.setCreateSymbols(false);
         vBoxCharts.getChildren().clear();
         vBoxCharts.getChildren().addAll(XPosition, YPosition, PPosition);
 
@@ -78,6 +80,7 @@ public class MainWindowController implements Initializable {
         log.info("Clear Signature canvas");
         actionManager.setPerformer(new ClearCanvasAction());
         actionManager.perform(mainWindow);
+        showCurrentSignature();
     }
 
     private LineChart<Number, Number> createLineChart(JavaFXPenNode penNode, String title, SignatureCharacteristics characteristics) {
