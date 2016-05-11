@@ -1,5 +1,46 @@
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<?import com.sun.javafx.scene.control.skin.IntegerField?>
+<?import javafx.scene.control.Spinner?>
 <BorderPane fx:id="editPane" xmlns:fx="http://javafx.com/fxml" fx:controller="com.biometryczne.signature.controllers.EditSignatureWindowController">
 
+    <top>
+        <VBox fx:id="vbox">
+            <children>
+                <HBox>
+                    <children>
+                        <Label text="Name:"/>
+                        <TextField fx:id="name" />
+                    </children>
+                </HBox>
+                <HBox>
+                    <children>
+                        <Label text="Surname:"/>
+                        <TextField fx:id="surname" />
+                    </children>
+                </HBox>
+                <HBox>
+                    <children>
+                        <Label text="Signature fields:"/>
+                        <Spinner fx:id="signatureFieldsNum"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <VBox fx:id="signaturesVBox"/>
+    </center>
+    <bottom>
+        <HBox>
+            <Button text="Zaakceptuj" onAction="#accept" />
+            <Button text="Wyczysc wszystkie" onAction="#clearAllCanvases" />
+            <Button text="Pokaz statystyki podpisów" onAction="#showStatisticsForAll" />
+        </HBox>
+    </bottom>
 
 </BorderPane>
