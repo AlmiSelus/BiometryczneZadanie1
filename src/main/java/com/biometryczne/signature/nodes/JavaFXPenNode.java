@@ -1,5 +1,6 @@
 package com.biometryczne.signature.nodes;
 
+import com.biometryczne.signature.CanvasPanel;
 import com.biometryczne.signature.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
 import javafx.embed.swing.SwingNode;
@@ -11,8 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.*;
 import java.util.List;
+
 
 /**
  * Created by Almi on 2016-05-09.
@@ -27,23 +31,40 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
 
     private Signature signature = new Signature();
 
+
+    private CanvasPanel canvasPanel;
+
+
     public JavaFXPenNode() {
         super();
 
         allowWriting = false;
 
-        setContent(createJComponent());
+/*
+//        setContent(createJComponent());
+        jp = new JPanel();
+        jp.setMinimumSize(new Dimension(penPanelWidth, penPanelHeight));
+        jp.setBorder(BorderFactory.createLineBorder(new Color(200,200,200), 5));
+*/
+        canvasPanel = new CanvasPanel();
+        canvasPanel.setMinimumSize(new Dimension(penPanelWidth, penPanelHeight));
+        canvasPanel.setBorder(BorderFactory.createLineBorder(new Color(200,200,200), 5));
+        setContent(canvasPanel);
+
+//        canvasPanel.setPoint(100,50);
 
         AwtPenToolkit.addPenListener(getContent(), this);
     }
-
+    /*
     private JLabel createJComponent() {
         JLabel l = new JLabel("");
         l.setMinimumSize(new Dimension(penPanelWidth, penPanelHeight));
         l.setBorder(BorderFactory.createLineBorder(new Color(200,200,200), 5));
         l.setVerticalTextPosition(SwingConstants.CENTER);
         return l;
-    }
+    }*/
+
+
 
     public void penButtonEvent(PButtonEvent ev) {
         allowWriting = true;
@@ -66,8 +87,14 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
                     .append(" Y = ").append(ev.pen.getLevelValue(PLevel.Type.Y))
                     .append(" Pressure = ").append(ev.pen.getLevelValue(PLevel.Type.PRESSURE));
 
-            log.info(sb.toString());
-            ((JLabel)getContent()).setText(sb.toString());
+//            log.info(sb.toString());
+            {
+                //((JLabel)getContent()).setText(sb.toString());
+//                jp.repaint();
+                canvasPanel.setSignature(signature);
+                canvasPanel.repaint();
+
+            }
         }
 
         //poza obszarem panelu wylacz mozliwosc pisania (nie pobiera danych)
@@ -92,11 +119,14 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     public void clearSignatureData() {
         log.info("Clearing canvas");
         signature.clearAll();
+        canvasPanel.setSignature(signature);
+        canvasPanel.repaint();
     }
 
     @Override
     public List<Double> getCanvasValues(SignatureCharacteristics characteristics) {
         return signature.get(characteristics);
     }
+
 
 }

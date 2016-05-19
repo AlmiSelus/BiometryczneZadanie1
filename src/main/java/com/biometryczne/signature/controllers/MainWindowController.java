@@ -45,7 +45,7 @@ public class MainWindowController implements Initializable {
     private ControllerActionManager actionManager = new ControllerActionManager();
 
     public void initialize(URL location, ResourceBundle resources) {
-
+        showCurrentSignature();
     }
 
     @FXML
