@@ -115,6 +115,13 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
 
     }
 
+//    @Override
+    public  void filterSignatureData()
+    {
+        log.info("Filtering data");
+        signature.filterCharacteristics();
+    }
+
     @Override
     public void clearSignatureData() {
         log.info("Clearing canvas");

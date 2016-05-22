@@ -58,7 +58,7 @@
                         <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Pokaż Wykres" onAction="#showCurrentSignature"/>
                         <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Wyczyść" GridPane.columnIndex="1" onAction="#clearSignatureCanvas"/>
                         <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Edytuj Podpis" GridPane.rowIndex="1" onAction="#editSignature"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Filtruj" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#filterCurrentSignature"/>
                         <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button" GridPane.rowIndex="2"/>
                         <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                     </children>

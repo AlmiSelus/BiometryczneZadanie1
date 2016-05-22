@@ -1,10 +1,7 @@
 package com.biometryczne.signature.controllers;
 
 import com.biometryczne.signature.Signature;
-import com.biometryczne.signature.controllers.actions.ClearCanvasAction;
-import com.biometryczne.signature.controllers.actions.CloseWindowAction;
-import com.biometryczne.signature.controllers.actions.ControllerActionManager;
-import com.biometryczne.signature.controllers.actions.EditSignatureAction;
+import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
 import javafx.event.ActionEvent;
@@ -23,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -63,8 +61,16 @@ public class MainWindowController implements Initializable {
 
         vBoxCharts.getChildren().clear();
         vBoxCharts.getChildren().addAll(XPosition, YPosition, PPosition);
-
     }
+    @FXML
+    public void filterCurrentSignature()
+    {
+        log.info("Filter Signature Data");
+        actionManager.setPerformer(new FilterCharacteristicsAction());
+
+        actionManager.perform(mainWindow);
+    }
+
 
     @FXML
     public void editSignature() {
