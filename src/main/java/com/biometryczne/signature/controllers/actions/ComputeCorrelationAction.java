@@ -3,11 +3,21 @@ package com.biometryczne.signature.controllers.actions;
 import com.biometryczne.signature.beans.SignatureJSONBean;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
+import com.fastdtw.dtw.DTW;
+import com.fastdtw.dtw.FastDTW;
+import com.fastdtw.timeseries.TimeSeries;
+import com.fastdtw.timeseries.TimeSeriesBase;
+import com.fastdtw.timeseries.TimeSeriesItem;
+import com.fastdtw.timeseries.TimeSeriesPoint;
+import com.fastdtw.util.Distances;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,40 +34,67 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
 
     private List<SignatureJSONBean> jsonBeans = new ArrayList<>();
     private double threshold = 0.5;
-    private Signature signature;
+    private TimeSeries x;
+    private TimeSeries y;
+    private TimeSeries p;
+    private SessionFactory sessionFactory; //polaczenie z baza danych
 
-    public ComputeCorrelationAction(Signature currentSignature) {
-        signature = currentSignature;
+    public ComputeCorrelationAction(double[] x, double[] y, double[] p, SessionFactory sessionFactory) {
+        this.x = getTimeSeries(x);
+        this.y = getTimeSeries(y);
+        this.p = getTimeSeries(p);
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public Void perform(Pane mainPane) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            jsonBeans = objectMapper.readValue(getClass().getResourceAsStream("/tmp/database.json"), objectMapper.getTypeFactory().constructCollectionType(List.class, SignatureJSONBean.class));
-        } catch (IOException e) {
-            log.info(ExceptionUtils.getStackTrace(e));
-        }
-
         PearsonsCorrelation pearson = new PearsonsCorrelation();
         SignatureJSONBean selectedSignature = null;
-        double xCorr = 0;
-        double yCorr = 0;
-        double pCorr = 0;
+        double xDTW = 0;
+        double yDTW = 0;
+        double pDTW = 0;
+        jsonBeans = getAll();
+        //pozniej mozna przepisac calego fora na zapytanie SQLowe :)
         for(SignatureJSONBean bean : jsonBeans) {
-            xCorr = pearson.correlation(bean.getX(), signature.getAsArray(SignatureCharacteristics.X));
-            yCorr = pearson.correlation(bean.getY(), signature.getAsArray(SignatureCharacteristics.Y));
-            pCorr = pearson.correlation(bean.getP(), signature.getAsArray(SignatureCharacteristics.PRESSURE));
-            if(xCorr >= threshold && yCorr >= threshold && pCorr >= threshold) {
+
+            TimeSeries xFromDB = getTimeSeries(bean.getX());
+            TimeSeries yFromDB = getTimeSeries(bean.getY());
+            TimeSeries pFromDB = getTimeSeries(bean.getP());
+
+            xDTW = FastDTW.compare(xFromDB, x, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+            yDTW = FastDTW.compare(yFromDB, y, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+            pDTW = FastDTW.compare(pFromDB, p, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+
+            if(xDTW >= threshold && yDTW >= threshold && pDTW >= threshold) {
                 selectedSignature = bean;
             }
         }
 
         if(selectedSignature != null) {
-            ((Label)mainPane.lookup("selectedUser")).setText(selectedSignature.getName() + " " + " Korelacje: " +
-                    "x = " + xCorr + " y = " + yCorr + " p = " + pCorr);
+            ((Label)mainPane.lookup("#selectedUser")).setText(selectedSignature.getName() + " " + " Wynik DTW: " +
+                    "x = " + xDTW + " y = " + yDTW + " p = " + pDTW);
         }
         return null;
+    }
+
+    private TimeSeries getTimeSeries(double[] fromBean) {
+
+        List<TimeSeriesItem> items = new ArrayList<>();
+        for(int i = 0; i < fromBean.length; ++i) {
+            items.add(new TimeSeriesItem(i, new TimeSeriesPoint(new double[]{fromBean[i]})));
+        }
+        TimeSeries ts = new TimeSeriesBase(items);
+        return ts;
+
+    }
+
+    private List<SignatureJSONBean> getAll() {
+        List<SignatureJSONBean> response = new ArrayList<>();
+        Session s = sessionFactory.openSession();
+        Criteria c = s.createCriteria(SignatureJSONBean.class);
+        response = c.list();
+        s.close();
+        return response;
     }
 
 }

@@ -2,7 +2,8 @@
   {
     "x": [],
     "y" : [],
-    "pressure": [],
-    "name" : "TmpName"
+    "p": [],
+    "name" : "TmpName",
+    "time" : 0
   }
 ]

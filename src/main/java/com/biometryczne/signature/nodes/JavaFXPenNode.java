@@ -103,5 +103,9 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
         return signature.get(characteristics);
     }
 
+    public double[] getCanvasValuesAsArray(SignatureCharacteristics characteristics) {
+        return signature.getAsArray(characteristics);
+    }
+
 
 }
