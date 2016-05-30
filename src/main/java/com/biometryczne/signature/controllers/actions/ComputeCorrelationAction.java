@@ -72,10 +72,12 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
             }
 
         }
-
+        Label selectedUserInfo = ((Label)mainPane.lookup("#selectedUser"));
         if(selectedSignature != null) {
-            ((Label)mainPane.lookup("#selectedUser")).setText(selectedSignature.getName() + " " + " Wynik DTW: " +
+            selectedUserInfo.setText(selectedSignature.getName() + " " + " Wynik DTW: " +
                     "x = " + xDTW + " y = " + yDTW + " p = " + pDTW);
+        } else {
+            selectedUserInfo.setText("Uzytkownik nie znaleziony! Dodaj informacje do bazy");
         }
 
         return null;
