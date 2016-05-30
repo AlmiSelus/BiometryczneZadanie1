@@ -14,16 +14,16 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SignatureJSONBean {
     private String name;
-    private List<Double> x;
-    private List<Double> y;
-    private List<Double> p;
+    private double[] x;
+    private double[] y;
+    private double[] p;
     private double time;
 
     public SignatureJSONBean() {
 
     }
 
-    public SignatureJSONBean(String name, String surname, List<Double> x, List<Double> y, List<Double> p, double pressure, double time) {
+    public SignatureJSONBean(String name, String surname, double[] x, double[] y, double[] p, double pressure, double time) {
         setName(name);
         setX(x);
         setY(y);
@@ -39,27 +39,27 @@ public class SignatureJSONBean {
         this.name = name;
     }
 
-    public List<Double> getX() {
+    public double[] getX() {
         return x;
     }
 
-    public void setX(List<Double> x) {
+    public void setX(double[] x) {
         this.x = x;
     }
 
-    public List<Double> getY() {
+    public double[] getY() {
         return y;
     }
 
-    public void setY(List<Double> y) {
+    public void setY(double[] y) {
         this.y = y;
     }
 
-    public List<Double> getP() {
+    public double[] getP() {
         return p;
     }
 
-    public void setP(List<Double> p) {
+    public void setP(double[] p) {
         this.p = p;
     }
 

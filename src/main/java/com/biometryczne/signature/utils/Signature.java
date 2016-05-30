@@ -32,6 +32,17 @@ public class Signature {
         return characteristics.get(type);
     }
 
+    public double[] getAsArray(SignatureCharacteristics type) {
+        List<Double> response = get(type);
+        double[] asArray = new double[response.size()];
+        int i = 0;
+        for(Double d : response) {
+            asArray[i] = d;
+            i++;
+        }
+        return asArray;
+    }
+
     public void clearAll() {
         for (Map.Entry<SignatureCharacteristics, List<Double>> entry : characteristics.entrySet()) {
             entry.getValue().clear();

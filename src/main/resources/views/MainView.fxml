@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
+<?import javafx.scene.control.Label?>
 <BorderPane fx:id="mainWindow" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.biometryczne.signature.controllers.MainWindowController">
     <top>
@@ -78,7 +79,8 @@
     <bottom>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
-                <Button mnemonicParsing="false" text="."/>
+                <Button mnemonicParsing="false" text="." onAction="#computeCorrelation"/>
+                <Label fx:id="selectedUser" id="selectedUser"/>
             </items>
         </ToolBar>
     </bottom>

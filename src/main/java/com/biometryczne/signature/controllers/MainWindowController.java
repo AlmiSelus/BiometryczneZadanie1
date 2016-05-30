@@ -3,6 +3,7 @@ package com.biometryczne.signature.controllers;
 import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -107,4 +108,9 @@ public class MainWindowController implements Initializable {
         return lineChart;
     }
 
+    @FXML
+    public void computeCorrelation() {
+        actionManager.setPerformer(new ComputeCorrelationAction());
+        actionManager.perform(mainWindow);
+    }
 }
