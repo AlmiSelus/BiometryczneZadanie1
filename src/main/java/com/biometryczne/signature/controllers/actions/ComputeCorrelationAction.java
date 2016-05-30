@@ -33,7 +33,6 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
     private final static Logger log = LoggerFactory.getLogger(ComputeCorrelationAction.class);
 
     private List<SignatureJSONBean> jsonBeans = new ArrayList<>();
-    private double threshold = 0.5;
     private TimeSeries x;
     private TimeSeries y;
     private TimeSeries p;
@@ -48,11 +47,11 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
 
     @Override
     public Void perform(Pane mainPane) {
-        PearsonsCorrelation pearson = new PearsonsCorrelation();
         SignatureJSONBean selectedSignature = null;
-        double xDTW = 0;
-        double yDTW = 0;
-        double pDTW = 0;
+        double xDTW = Double.MAX_VALUE;
+        double yDTW = Double.MAX_VALUE;
+        double pDTW = Double.MAX_VALUE;
+
         jsonBeans = getAll();
         //pozniej mozna przepisac calego fora na zapytanie SQLowe :)
         for(SignatureJSONBean bean : jsonBeans) {
@@ -61,19 +60,24 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
             TimeSeries yFromDB = getTimeSeries(bean.getY());
             TimeSeries pFromDB = getTimeSeries(bean.getP());
 
-            xDTW = FastDTW.compare(xFromDB, x, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
-            yDTW = FastDTW.compare(yFromDB, y, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
-            pDTW = FastDTW.compare(pFromDB, p, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+            double dtwx = FastDTW.compare(xFromDB, x, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+            double dtwy = FastDTW.compare(yFromDB, y, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
+            double dtwp = FastDTW.compare(pFromDB, p, 10, Distances.EUCLIDEAN_DISTANCE).getDistance();
 
-            if(xDTW >= threshold && yDTW >= threshold && pDTW >= threshold) {
+            if(dtwx < xDTW && yDTW > dtwy && pDTW > dtwp) {
                 selectedSignature = bean;
+                xDTW = dtwx;
+                yDTW = dtwy;
+                pDTW = dtwp;
             }
+
         }
 
         if(selectedSignature != null) {
             ((Label)mainPane.lookup("#selectedUser")).setText(selectedSignature.getName() + " " + " Wynik DTW: " +
                     "x = " + xDTW + " y = " + yDTW + " p = " + pDTW);
         }
+
         return null;
     }
 
