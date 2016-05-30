@@ -1,13 +1,10 @@
-package com.biometryczne.signature;
+package com.biometryczne.signature.utils;
 
-import com.biometryczne.signature.utils.SignatureCharacteristics;
-import com.sun.org.apache.bcel.internal.generic.FLOAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 /**
  * Created by Adi on 2016-05-18.

@@ -1,26 +1,20 @@
 package com.biometryczne.signature.controllers;
 
-import com.biometryczne.signature.Signature;
 import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import jpen.PenEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 

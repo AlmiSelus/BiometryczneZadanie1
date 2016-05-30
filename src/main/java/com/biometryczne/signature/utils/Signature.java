@@ -1,12 +1,8 @@
-package com.biometryczne.signature;
+package com.biometryczne.signature.utils;
 
-import com.biometryczne.signature.utils.SignatureCharacteristics;
-import jpen.PLevel;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.geom.Arc2D;
 import java.util.*;
 
 /**
@@ -14,13 +10,15 @@ import java.util.*;
  */
 public class Signature {
     private final static Logger log = LoggerFactory.getLogger(Signature.class);
-
-
     private String name;
     private Map<SignatureCharacteristics, List<Double>> characteristics = new HashMap<>();
 
     public Signature() {
-        name = "new";
+        this("new");
+    }
+
+    public Signature(String name) {
+        this.name = name;
         characteristics.put(SignatureCharacteristics.X, new ArrayList<>());
         characteristics.put(SignatureCharacteristics.Y, new ArrayList<>());
         characteristics.put(SignatureCharacteristics.PRESSURE, new ArrayList<>());

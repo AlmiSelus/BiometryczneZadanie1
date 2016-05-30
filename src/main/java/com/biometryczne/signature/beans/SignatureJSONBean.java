@@ -1,5 +1,6 @@
 package com.biometryczne.signature.beans;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -10,70 +11,63 @@ import java.util.List;
  */
 @JsonSerialize
 @JsonDeserialize
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SignatureJSONBean {
     private String name;
-    private String surname;
-    private List<PointJSON> coordinates;
-    private double pressure;
+    private List<Double> x;
+    private List<Double> y;
+    private List<Double> p;
     private double time;
 
     public SignatureJSONBean() {
 
     }
 
-    public SignatureJSONBean(String name, String surname, List<PointJSON> coordinates, double pressure, double time) {
+    public SignatureJSONBean(String name, String surname, List<Double> x, List<Double> y, List<Double> p, double pressure, double time) {
         setName(name);
-        setSurname(surname);
-        setCoordinates(coordinates);
-        setPressure(pressure);
+        setX(x);
+        setY(y);
+        setP(p);
         setTime(time);
     }
 
-    public void setPressure(double pressure) {
-        this.pressure = pressure;
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public List<Double> getX() {
+        return x;
     }
 
-    public void setCoordinates(List<PointJSON> coordinates) {
-        this.coordinates = coordinates;
+    public void setX(List<Double> x) {
+        this.x = x;
     }
 
-    public void addCoordinate(PointJSON coordinate) {
-        coordinates.add(coordinate);
+    public List<Double> getY() {
+        return y;
     }
 
-    public void removeCoordinate(PointJSON coordinate) {
-        coordinates.add(coordinate);
+    public void setY(List<Double> y) {
+        this.y = y;
     }
 
-    public void setTime(double time) {
-        this.time = time;
+    public List<Double> getP() {
+        return p;
     }
 
-    public double getPressure() {
-        return pressure;
+    public void setP(List<Double> p) {
+        this.p = p;
     }
 
     public double getTime() {
         return time;
     }
 
-    public List<PointJSON> getCoordinates() {
-        return coordinates;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public String getName() {
-        return name;
+    public void setTime(double time) {
+        this.time = time;
     }
 }
