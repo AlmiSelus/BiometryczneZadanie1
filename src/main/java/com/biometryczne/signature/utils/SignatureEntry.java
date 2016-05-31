@@ -7,6 +7,11 @@ public class SignatureEntry {
     private String name;
     private Integer id;
 
+    public SignatureEntry(int id, String name) {
+        setId(id);
+        setName(name);
+    }
+
     public String getName() {
         return name;
     }

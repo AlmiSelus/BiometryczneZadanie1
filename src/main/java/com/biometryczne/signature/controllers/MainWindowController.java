@@ -2,6 +2,7 @@ package com.biometryczne.signature.controllers;
 
 import com.biometryczne.signature.beans.SignatureJSONBean;
 import com.biometryczne.signature.controllers.actions.*;
+import com.biometryczne.signature.dao.SignatureDAO;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
@@ -15,28 +16,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
-import javafx.util.Callback;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -64,6 +57,8 @@ public class MainWindowController implements Initializable {
 
     private SessionFactory sessionFactory;
 
+    private SignatureDAO signatureDAO;
+
     public void initialize(URL location, ResourceBundle resources) {
 
 
@@ -73,18 +68,16 @@ public class MainWindowController implements Initializable {
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:h2:./signatures");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
         configuration.addAnnotatedClass(SignatureJSONBean.class);
         sessionFactory = configuration.buildSessionFactory();
-        Session s = sessionFactory.openSession();
-        Criteria c = s.createCriteria(SignatureJSONBean.class);
-        List<SignatureJSONBean> list = c.list();
-        s.close();
+        signatureDAO = new SignatureDAO(sessionFactory);
 
-        for (SignatureJSONBean bean : list) {
-            log.info(bean.toString());
+        List<SignatureJSONBean> list = signatureDAO.getAll();
+        for(SignatureJSONBean bean : list) {
+            data.add(new SignatureEntry(bean.getId(), bean.getName()));
         }
+
     }
 
     //----------------------------------------------------------------------------------------------------- table view
@@ -111,7 +104,6 @@ public class MainWindowController implements Initializable {
 
     @FXML
     private void addTableItem() {
-//        Signature tmp = mainSignatureCanvas.getSignature();
         TextInputDialog dialog = new TextInputDialog("nowy...");
         dialog.setTitle("Dodaj podpis");
         dialog.setHeaderText("Wpisz nazwę poniżej");
@@ -121,22 +113,16 @@ public class MainWindowController implements Initializable {
 
         Signature sig = mainSignatureCanvas.getSignature();
         int id = data.size()+1;
-        SignatureEntry entry = new SignatureEntry();
-        entry.setId(id);
-        entry.setName(name);
-        data.add(entry);
+        data.add(new SignatureEntry(id, name));
 
-        Session s = sessionFactory.openSession();
-        Transaction t = s.beginTransaction();
+
         SignatureJSONBean bean = new SignatureJSONBean();
         bean.setId(id);
         bean.setName(name);
         bean.setX(sig.getAsArray(SignatureCharacteristics.X));
         bean.setY(sig.getAsArray(SignatureCharacteristics.Y));
         bean.setP(sig.getAsArray(SignatureCharacteristics.PRESSURE));
-        s.save(bean);
-        t.commit();
-        s.close();
+        signatureDAO.create(bean);
 
 //        for (int i = 0; i<data.size(); i++)
 //        {
@@ -146,24 +132,32 @@ public class MainWindowController implements Initializable {
 
     @FXML
     private void renameTableItem() {
-        int index = -1;
+        int index = fxTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            int indexForDB = data.get(index).getId();
+            TextInputDialog dialog = new TextInputDialog(data.get(index).getName());
+            dialog.setTitle("Zmień nazwę");
+            dialog.setHeaderText("Wpisz nazwę poniżej");
+            dialog.setContentText("Nowa nazwa:");
+            String name = dialog.showAndWait().get();
+            data.get(index).setName(name);
 
+            SignatureJSONBean bean = signatureDAO.getById(indexForDB);
+            bean.setName(name);
+            signatureDAO.update(bean);
 
-        index = fxTable.getSelectionModel().getSelectedIndex();
-//        if (index >= 0) {
-//            TextInputDialog dialog = new TextInputDialog(data.get(index).getName());
-//            dialog.setTitle("Zmień nazwę");
-//            dialog.setHeaderText("Wpisz nazwę poniżej");
-//            dialog.setContentText("Nowa nazwa:");
-//            data.get(index).setName(dialog.showAndWait().get());
-//            fxTable.refresh();
-//        }
+            fxTable.refresh();
+        }
     }
 
     @FXML
     private void removeTableItem() {
         int index = fxTable.getSelectionModel().getSelectedIndex();
-        if (index >= 0) data.remove(index);
+        if (index >= 0) {
+            int indexForDB = data.get(index).getId();
+            data.remove(index);
+            signatureDAO.remove(indexForDB);
+        }
     }
 
 
@@ -173,11 +167,8 @@ public class MainWindowController implements Initializable {
         log.info("Showing selected item");
         int index = fxTable.getSelectionModel().getSelectedIndex();
         if (index >= 0) {
-            Session session = sessionFactory.openSession();
-            Criteria criteria = session.createCriteria(SignatureJSONBean.class);
-            criteria.add(Restrictions.eq("id", data.get(index).getId()));
-            SignatureJSONBean bean = (SignatureJSONBean) criteria.uniqueResult();
-            session.close();
+            int indexForDB = data.get(index).getId();
+            SignatureJSONBean bean = signatureDAO.getById(indexForDB);
             Signature signature = new Signature();
             signature.setName(bean.getName());
             signature.addAll(bean.getX(), SignatureCharacteristics.X);
