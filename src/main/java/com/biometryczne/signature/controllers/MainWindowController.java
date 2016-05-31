@@ -5,6 +5,7 @@ import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
+import com.biometryczne.signature.utils.SignatureEntry;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,7 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -45,18 +49,18 @@ public class MainWindowController implements Initializable {
     @FXML
     private VBox vBoxCharts;
 
-//    @FXML
-//    private VBox vBoxTableView;
-
     @FXML
     public JavaFXPenNode mainSignatureCanvas;
 
     @FXML
     private BorderPane mainWindow;
 
-    private ControllerActionManager actionManager = new ControllerActionManager();
+    @FXML
+    private TableView fxTable;
 
-    private final TableView<Signature> tableView = new TableView<Signature>();
+    private ObservableList<SignatureEntry> data = FXCollections.observableArrayList();
+
+    private ControllerActionManager actionManager = new ControllerActionManager();
 
     private SessionFactory sessionFactory;
 
@@ -84,12 +88,7 @@ public class MainWindowController implements Initializable {
     }
 
     //----------------------------------------------------------------------------------------------------- table view
-    private ObservableList<Signature> data = FXCollections.observableArrayList(
-//            new Signature("a1")
-    );
 
-    @FXML
-    TableView fxTable;
 
     private void addTableView() {
 
@@ -103,9 +102,8 @@ public class MainWindowController implements Initializable {
             }
         });
 
-        TableColumn firstNameCol = new TableColumn("Name");
-        firstNameCol.setCellValueFactory(
-                new PropertyValueFactory<>("name"));
+        TableColumn firstNameCol = new TableColumn<>("Name");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory("name"));
 
         fxTable.setItems(data);
         fxTable.getColumns().addAll(firstNameCol);
@@ -119,13 +117,20 @@ public class MainWindowController implements Initializable {
         dialog.setHeaderText("Wpisz nazwę poniżej");
         dialog.setContentText("Nazwa:");//        tmp.setName(dialog.showAndWait().get());
 
-        Signature sig = new Signature(mainSignatureCanvas.getSignature(), dialog.showAndWait().get());
-        data.add(sig);
+        String name = dialog.showAndWait().get();
+
+        Signature sig = mainSignatureCanvas.getSignature();
+        int id = data.size()+1;
+        SignatureEntry entry = new SignatureEntry();
+        entry.setId(id);
+        entry.setName(name);
+        data.add(entry);
 
         Session s = sessionFactory.openSession();
         Transaction t = s.beginTransaction();
         SignatureJSONBean bean = new SignatureJSONBean();
-        bean.setName(sig.getName());
+        bean.setId(id);
+        bean.setName(name);
         bean.setX(sig.getAsArray(SignatureCharacteristics.X));
         bean.setY(sig.getAsArray(SignatureCharacteristics.Y));
         bean.setP(sig.getAsArray(SignatureCharacteristics.PRESSURE));
@@ -133,10 +138,10 @@ public class MainWindowController implements Initializable {
         t.commit();
         s.close();
 
-        for (int i = 0; i<data.size(); i++)
-        {
-            log.info("\n"+data.get(i).getName());
-        }
+//        for (int i = 0; i<data.size(); i++)
+//        {
+//            log.info("\n"+data.get(i).getName());
+//        }
     }
 
     @FXML
@@ -145,23 +150,23 @@ public class MainWindowController implements Initializable {
 
 
         index = fxTable.getSelectionModel().getSelectedIndex();
-        if (index >= 0) {
-            TextInputDialog dialog = new TextInputDialog(data.get(index).getName());
-            dialog.setTitle("Zmień nazwę");
-            dialog.setHeaderText("Wpisz nazwę poniżej");
-            dialog.setContentText("Nowa nazwa:");
-            data.get(index).setName(dialog.showAndWait().get());
-            fxTable.refresh();
-        }
+//        if (index >= 0) {
+//            TextInputDialog dialog = new TextInputDialog(data.get(index).getName());
+//            dialog.setTitle("Zmień nazwę");
+//            dialog.setHeaderText("Wpisz nazwę poniżej");
+//            dialog.setContentText("Nowa nazwa:");
+//            data.get(index).setName(dialog.showAndWait().get());
+//            fxTable.refresh();
+//        }
     }
 
     @FXML
     private void removeTableItem() {
-        int index = -1;
-
-        index = fxTable.getSelectionModel().getSelectedIndex();
+        int index = fxTable.getSelectionModel().getSelectedIndex();
         if (index >= 0) data.remove(index);
     }
+
+
 
     @FXML
     private void showSelectedTableItem() {
@@ -170,7 +175,7 @@ public class MainWindowController implements Initializable {
         if (index >= 0) {
             Session session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(SignatureJSONBean.class);
-            criteria.add(Restrictions.eq("name", data.get(index).getName()));
+            criteria.add(Restrictions.eq("id", data.get(index).getId()));
             SignatureJSONBean bean = (SignatureJSONBean) criteria.uniqueResult();
             session.close();
             Signature signature = new Signature();

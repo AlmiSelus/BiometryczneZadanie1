@@ -19,7 +19,10 @@ import java.util.List;
 public class SignatureJSONBean {
 
     @Id
-    @Column(unique=true)
+    @Column(unique = true)
+    private Integer id;
+
+    @Column
     private String name;
 
     @Column(length = Integer.MAX_VALUE) //marnowanie pamieci - pomyslec co z tym zrobic
@@ -85,5 +88,13 @@ public class SignatureJSONBean {
     @Override
     public String toString() {
         return "Uzytkownik w bazie : " + name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

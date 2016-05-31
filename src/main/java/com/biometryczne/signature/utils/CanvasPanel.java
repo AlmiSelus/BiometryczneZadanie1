@@ -36,10 +36,10 @@ public class CanvasPanel extends JPanel{
 
 //                if (tmpP > 0) {
                     g2d.drawLine(
-                            signature.get(SignatureCharacteristics.X).get(i).intValue(),
-                            signature.get(SignatureCharacteristics.Y).get(i).intValue(),
-                            signature.get(SignatureCharacteristics.X).get(i - 1).intValue(),
-                            signature.get(SignatureCharacteristics.Y).get(i - 1).intValue());
+                            signature.get(SignatureCharacteristics.X).get(i).intValue()+10,
+                            signature.get(SignatureCharacteristics.Y).get(i).intValue()+10,
+                            signature.get(SignatureCharacteristics.X).get(i - 1).intValue()+10,
+                            signature.get(SignatureCharacteristics.Y).get(i - 1).intValue()+10);
 //                }
             }
         }
