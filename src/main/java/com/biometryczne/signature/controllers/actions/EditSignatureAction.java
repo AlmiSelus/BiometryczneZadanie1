@@ -1,17 +1,17 @@
 package com.biometryczne.signature.controllers.actions;
 
-import com.biometryczne.signature.controllers.EditSignatureWindowController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+        import com.biometryczne.signature.controllers.EditSignatureWindowController;
+        import javafx.fxml.FXMLLoader;
+        import javafx.scene.Parent;
+        import javafx.scene.Scene;
+        import javafx.scene.layout.Pane;
+        import javafx.stage.Stage;
+        import javafx.stage.StageStyle;
+        import org.apache.commons.lang3.exception.ExceptionUtils;
+        import org.hibernate.Session;
+        import org.hibernate.SessionFactory;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
 
 /**
  * Created by c309044 on 2016-05-10.

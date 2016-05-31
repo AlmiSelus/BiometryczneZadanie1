@@ -53,6 +53,7 @@ public class EditSignatureWindowController implements Initializable {
         signature.setX(signatureNode.getCanvasValuesAsArray(SignatureCharacteristics.X));
         signature.setY(signatureNode.getCanvasValuesAsArray(SignatureCharacteristics.Y));
         signature.setP(signatureNode.getCanvasValuesAsArray(SignatureCharacteristics.PRESSURE));
+        signatureNode.filterSignatureData();
 
         session.save(signature);
 

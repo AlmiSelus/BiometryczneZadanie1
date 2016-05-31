@@ -35,14 +35,14 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     private JComponent createJComponent() {
         CanvasPanel canvasPanel = new CanvasPanel();
         canvasPanel.setMinimumSize(new Dimension(penPanelWidth, penPanelHeight));
-        canvasPanel.setBorder(BorderFactory.createLineBorder(new Color(200,200,200), 5));
+        canvasPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 5));
         return canvasPanel;
     }
 
     public void penButtonEvent(PButtonEvent ev) {
         allowWriting = true;
         log.info("\tMozna Pisać");
-   }
+    }
 
     public void penKindEvent(PKindEvent ev) {
 
@@ -52,22 +52,22 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
         StringBuilder sb = new StringBuilder();
 
         if (allowWriting) {
-            signature.add((double)ev.pen.getLevelValue(PLevel.Type.X), SignatureCharacteristics.X);
-            signature.add((double)ev.pen.getLevelValue(PLevel.Type.Y), SignatureCharacteristics.Y);
-            signature.add((double)ev.pen.getLevelValue(PLevel.Type.PRESSURE), SignatureCharacteristics.PRESSURE);
+            signature.add((double) ev.pen.getLevelValue(PLevel.Type.X), SignatureCharacteristics.X);
+            signature.add((double) ev.pen.getLevelValue(PLevel.Type.Y), SignatureCharacteristics.Y);
+            signature.add((double) ev.pen.getLevelValue(PLevel.Type.PRESSURE), SignatureCharacteristics.PRESSURE);
 
             sb.append("X = ").append(ev.pen.getLevelValue(PLevel.Type.X))
                     .append(" Y = ").append(ev.pen.getLevelValue(PLevel.Type.Y))
                     .append(" Pressure = ").append(ev.pen.getLevelValue(PLevel.Type.PRESSURE));
 
-            ((CanvasPanel)getContent()).setSignature(signature);
+            ((CanvasPanel) getContent()).setSignature(signature);
             getContent().repaint();
 
         }
 
         //poza obszarem panelu wylacz mozliwosc pisania (nie pobiera danych)
-        if (ev.pen.getLevelValue(PLevel.Type.X) < 5 | ev.pen.getLevelValue(PLevel.Type.X) > penPanelWidth-5
-                | ev.pen.getLevelValue(PLevel.Type.Y) < 5 | ev.pen.getLevelValue(PLevel.Type.Y) > penPanelHeight-5) {
+        if (ev.pen.getLevelValue(PLevel.Type.X) < 5 | ev.pen.getLevelValue(PLevel.Type.X) > penPanelWidth - 5
+                | ev.pen.getLevelValue(PLevel.Type.Y) < 5 | ev.pen.getLevelValue(PLevel.Type.Y) > penPanelHeight - 5) {
             allowWriting = false;
             log.info("\tNIE Mozna Pisać");
         }
@@ -83,9 +83,8 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
 
     }
 
-//    @Override
-    public  void filterSignatureData()
-    {
+    //    @Override
+    public void filterSignatureData() {
         log.info("Filtering data");
         signature.filterCharacteristics();
     }
@@ -94,7 +93,7 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     public void clearSignatureData() {
         log.info("Clearing canvas");
         signature.clearAll();
-        ((CanvasPanel)getContent()).setSignature(signature);
+        ((CanvasPanel) getContent()).setSignature(signature);
         getContent().repaint();
     }
 
@@ -108,4 +107,14 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     }
 
 
+    public void setSignature(Signature signature) {
+        this.signature = signature;
+        log.info("\n" + signature.getAsArray(SignatureCharacteristics.X).length);
+//        ((CanvasPanel) getContent()).setSignature(signature);
+//        getContent().repaint();
+    }
+
+    public Signature getSignature() {
+        return this.signature;
+    }
 }

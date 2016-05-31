@@ -12,6 +12,13 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+
+<?import javafx.scene.control.Label?>
+
+
+<?import javafx.scene.text.Font?>
 <BorderPane fx:id="mainWindow" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.biometryczne.signature.controllers.MainWindowController">
     <top>
@@ -32,11 +39,48 @@
             </menus>
         </MenuBar>
     </top>
+
+    <left>
+        <!--<VBox fx:id="vBoxTableView"/>-->
+        <BorderPane>
+            <top>
+            </top>
+            <center>
+                <TableView fx:id="fxTable"  prefWidth="200.0">
+                </TableView>
+            </center>
+            <bottom>                <!-- Buttony -->
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
+                        <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Dodaj" GridPane.columnIndex="0" GridPane.rowIndex="0" onAction="#addTableItem"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Usuń" GridPane.columnIndex="1" GridPane.rowIndex="0" onAction="#removeTableItem"/>
+
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zapisz" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Pokaż" GridPane.columnIndex="0" GridPane.rowIndex="2" onAction="#showSelectedTableItem"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zmien Nazwę" GridPane.columnIndex="1" GridPane.rowIndex="2" onAction="#renameTableItem"/>
+                    </children>
+                    <padding>
+                        <Insets top="10.0"/>
+                    </padding>
+                </GridPane>
+            </bottom>
+        </BorderPane>
+    </left>
     <center>
         <VBox fx:id="vBoxCharts"/>
     </center>
     <right>
-        <VBox prefHeight="200.0"  style="-fx-background-color: #8dc63f;" prefWidth="100.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="200.0" style="-fx-background-color: #8dc63f;" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
                 <!-- okienko -->
 
@@ -55,12 +99,18 @@
                         <RowConstraints minHeight="10.0" prefHeight="50.0" valignment="CENTER" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Pokaż Wykres" onAction="#showCurrentSignature"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Wyczyść" GridPane.columnIndex="1" onAction="#clearSignatureCanvas"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Edytuj Podpis" GridPane.rowIndex="1" onAction="#editSignature"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Filtruj" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#filterCurrentSignature"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button" GridPane.rowIndex="2"/>
-                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Pokaż Wykres"
+                                onAction="#showCurrentSignature"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Wyczyść"
+                                GridPane.columnIndex="1" onAction="#clearSignatureCanvas"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Edytuj Podpis"
+                                GridPane.rowIndex="1" onAction="#editSignature"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Filtruj"
+                                GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#filterCurrentSignature"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button"
+                                GridPane.rowIndex="2"/>
+                        <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Button"
+                                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                     </children>
                     <padding>
                         <Insets top="10.0"/>
@@ -76,10 +126,14 @@
 
     </right>
     <bottom>
-        <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+
+        <!-- Buttony -->
+        <ToolBar prefHeight="40.0" BorderPane.alignment="CENTER">
             <items>
-                <Button mnemonicParsing="false" text="."/>
+                <Button mnemonicParsing="false" text="." onAction="#computeCorrelation"/>
+                <Label fx:id="selectedUser" id="selectedUser"/>
             </items>
         </ToolBar>
+
     </bottom>
 </BorderPane>

@@ -5,14 +5,22 @@ import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -35,6 +43,9 @@ public class MainWindowController implements Initializable {
     @FXML
     private VBox vBoxCharts;
 
+//    @FXML
+//    private VBox vBoxTableView;
+
     @FXML
     public JavaFXPenNode mainSignatureCanvas;
 
@@ -43,10 +54,15 @@ public class MainWindowController implements Initializable {
 
     private ControllerActionManager actionManager = new ControllerActionManager();
 
+    private final TableView<Signature> tableView = new TableView<Signature>();
+
     private SessionFactory sessionFactory;
 
     public void initialize(URL location, ResourceBundle resources) {
+
+
         showCurrentSignature();
+        addTableView();
         Configuration configuration = new Configuration();
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
@@ -59,10 +75,97 @@ public class MainWindowController implements Initializable {
         Criteria c = s.createCriteria(SignatureJSONBean.class);
         List<SignatureJSONBean> list = c.list();
         s.close();
-        for(SignatureJSONBean bean : list) {
+
+        for (SignatureJSONBean bean : list) {
             log.info(bean.toString());
         }
     }
+
+    //----------------------------------------------------------------------------------------------------- table view
+    private ObservableList<Signature> data = FXCollections.observableArrayList(
+//            new Signature("a1")
+    );
+
+    @FXML
+    TableView fxTable;
+
+    private void addTableView() {
+
+        fxTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (fxTable.getSelectionModel().getSelectedItem() != null) {
+                    int index = fxTable.getSelectionModel().getSelectedIndex();
+                    log.info("\n\tSelected Value\t\t" + index);
+                }
+            }
+        });
+
+        TableColumn firstNameCol = new TableColumn("Name");
+        firstNameCol.setCellValueFactory(
+                new PropertyValueFactory<>("name"));
+
+        fxTable.setItems(data);
+        fxTable.getColumns().addAll(firstNameCol);
+    }
+
+    @FXML
+    private void addTableItem() {
+//        Signature tmp = mainSignatureCanvas.getSignature();
+        TextInputDialog dialog = new TextInputDialog("nowy...");
+        dialog.setTitle("Dodaj podpis");
+        dialog.setHeaderText("Wpisz nazwę poniżej");
+        dialog.setContentText("Nazwa:");//        tmp.setName(dialog.showAndWait().get());
+
+
+        data.add(new Signature(mainSignatureCanvas.getSignature(), dialog.showAndWait().get()));
+
+        for (int i = 0; i<data.size(); i++)
+        {
+            log.info("\n"+data.get(i).getName());
+        }
+    }
+
+    @FXML
+    private void renameTableItem() {
+        int index = -1;
+
+
+        index = fxTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            TextInputDialog dialog = new TextInputDialog(data.get(index).getName());
+            dialog.setTitle("Zmień nazwę");
+            dialog.setHeaderText("Wpisz nazwę poniżej");
+            dialog.setContentText("Nowa nazwa:");
+            data.get(index).setName(dialog.showAndWait().get());
+            fxTable.refresh();
+        }
+    }
+
+    @FXML
+    private void removeTableItem() {
+        int index = -1;
+
+        index = fxTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0) data.remove(index);
+    }
+
+    @FXML
+    private void showSelectedTableItem() {
+        log.info("Showing selected item");
+        int index = -1;
+
+        index = fxTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0)
+        {
+            mainSignatureCanvas.setSignature(new Signature(data.get(index)));
+            log.info("\n\tName: "+data.get(index).getName());
+            log.info("\n\tLength: "+data.get(index).get(SignatureCharacteristics.Y).size());
+        }
+
+//        showCurrentSignature();
+    }
+
 
     @FXML
     public void closeWindow() {
@@ -79,10 +182,11 @@ public class MainWindowController implements Initializable {
 
         vBoxCharts.getChildren().clear();
         vBoxCharts.getChildren().addAll(XPosition, YPosition, PPosition);
+
     }
+
     @FXML
-    public void filterCurrentSignature()
-    {
+    public void filterCurrentSignature() {
         log.info("Filter Signature Data");
         actionManager.setPerformer(new FilterCharacteristicsAction());
 
@@ -116,7 +220,7 @@ public class MainWindowController implements Initializable {
 
         List<Double> axisValues = penNode.getCanvasValues(characteristics);
 
-        if(axisValues == null) {
+        if (axisValues == null) {
             throw new IllegalArgumentException("Nieprawidlowy typ danych");
         }
 

@@ -24,6 +24,23 @@ public class Signature {
         characteristics.put(SignatureCharacteristics.PRESSURE, new ArrayList<>());
     }
 
+    public Signature(Signature template, String name)
+    {
+        this.name = name;
+        characteristics.put(SignatureCharacteristics.X, template.get(SignatureCharacteristics.X));
+        characteristics.put(SignatureCharacteristics.Y, template.get(SignatureCharacteristics.Y));
+        characteristics.put(SignatureCharacteristics.PRESSURE, template.get(SignatureCharacteristics.PRESSURE));
+
+    }
+    public Signature(Signature template)
+    {
+        this.name = template.getName();
+        characteristics.put(SignatureCharacteristics.X, template.get(SignatureCharacteristics.X));
+        characteristics.put(SignatureCharacteristics.Y, template.get(SignatureCharacteristics.Y));
+        characteristics.put(SignatureCharacteristics.PRESSURE, template.get(SignatureCharacteristics.PRESSURE));
+    }
+
+
     public void add(double value, SignatureCharacteristics type) {
         characteristics.get(type).add(value);
     }
@@ -92,6 +109,12 @@ public class Signature {
         }
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 
