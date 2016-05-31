@@ -24,8 +24,10 @@ import javafx.stage.StageStyle;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,8 +119,19 @@ public class MainWindowController implements Initializable {
         dialog.setHeaderText("Wpisz nazwę poniżej");
         dialog.setContentText("Nazwa:");//        tmp.setName(dialog.showAndWait().get());
 
+        Signature sig = new Signature(mainSignatureCanvas.getSignature(), dialog.showAndWait().get());
+        data.add(sig);
 
-        data.add(new Signature(mainSignatureCanvas.getSignature(), dialog.showAndWait().get()));
+        Session s = sessionFactory.openSession();
+        Transaction t = s.beginTransaction();
+        SignatureJSONBean bean = new SignatureJSONBean();
+        bean.setName(sig.getName());
+        bean.setX(sig.getAsArray(SignatureCharacteristics.X));
+        bean.setY(sig.getAsArray(SignatureCharacteristics.Y));
+        bean.setP(sig.getAsArray(SignatureCharacteristics.PRESSURE));
+        s.save(bean);
+        t.commit();
+        s.close();
 
         for (int i = 0; i<data.size(); i++)
         {
@@ -153,17 +166,25 @@ public class MainWindowController implements Initializable {
     @FXML
     private void showSelectedTableItem() {
         log.info("Showing selected item");
-        int index = -1;
+        int index = fxTable.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            Session session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(SignatureJSONBean.class);
+            criteria.add(Restrictions.eq("name", data.get(index).getName()));
+            SignatureJSONBean bean = (SignatureJSONBean) criteria.uniqueResult();
+            session.close();
+            Signature signature = new Signature();
+            signature.setName(bean.getName());
+            signature.addAll(bean.getX(), SignatureCharacteristics.X);
+            signature.addAll(bean.getY(), SignatureCharacteristics.Y);
+            signature.addAll(bean.getP(), SignatureCharacteristics.PRESSURE);
 
-        index = fxTable.getSelectionModel().getSelectedIndex();
-        if (index >= 0)
-        {
-            mainSignatureCanvas.setSignature(new Signature(data.get(index)));
-            log.info("\n\tName: "+data.get(index).getName());
-            log.info("\n\tLength: "+data.get(index).get(SignatureCharacteristics.Y).size());
+            mainSignatureCanvas.setSignature(signature);
+            log.info("\n\tName: "+bean.getName());
+            log.info("\n\tLength: "+bean.getY().length);
         }
 
-//        showCurrentSignature();
+        showCurrentSignature();
     }
 
 

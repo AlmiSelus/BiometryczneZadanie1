@@ -110,8 +110,8 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     public void setSignature(Signature signature) {
         this.signature = signature;
         log.info("\n" + signature.getAsArray(SignatureCharacteristics.X).length);
-//        ((CanvasPanel) getContent()).setSignature(signature);
-//        getContent().repaint();
+        ((CanvasPanel) getContent()).setSignature(signature);
+        getContent().repaint();
     }
 
     public Signature getSignature() {
