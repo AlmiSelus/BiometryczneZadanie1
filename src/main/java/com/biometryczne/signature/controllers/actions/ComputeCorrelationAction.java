@@ -1,33 +1,21 @@
 package com.biometryczne.signature.controllers.actions;
 
 import com.biometryczne.signature.beans.SignatureJSONBean;
-import com.biometryczne.signature.utils.Signature;
-import com.biometryczne.signature.utils.SignatureCharacteristics;
-import com.fastdtw.dtw.DTW;
 import com.fastdtw.dtw.FastDTW;
 import com.fastdtw.timeseries.TimeSeries;
 import com.fastdtw.timeseries.TimeSeriesBase;
 import com.fastdtw.timeseries.TimeSeriesItem;
 import com.fastdtw.timeseries.TimeSeriesPoint;
-import com.fastdtw.util.DistanceFunction;
-import com.fastdtw.util.Distances;
 import com.fastdtw.util.EuclideanDistance;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by Almi on 2016-05-30.
@@ -53,50 +41,86 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
 
     @Override
     public Void perform(Pane mainPane) {
-//        SignatureJSONBean selectedSignature = null;
-//        double prevDTW = Double.MAX_VALUE;
+
 
         Map<Double, SignatureJSONBean> competition = new TreeMap<>();
 
         jsonBeans = getAll();
-        //pozniej mozna przepisac calego fora na zapytanie SQLowe :)
-        for(SignatureJSONBean bean : jsonBeans) {
+        int localLenght = x.length;
+        int dbLength = 0;
 
-            TimeSeries dtwFromDB = TimeSeriesBase.builder().add(0, bean.getX()).add(1, bean.getY()).add(2, bean.getP()).build();
-            TimeSeries localDtw  = TimeSeriesBase.builder().add(0, x).add(1, y).add(2, p).build();
-
-            double dtw = FastDTW.compare(dtwFromDB, localDtw, 10, new EuclideanDistance()).getDistance();
-            competition.put(dtw, bean);
-
-        }
 
         int index = 0;
-        for(Map.Entry<Double, SignatureJSONBean> entry : competition.entrySet()) {
-            if(index < ITEMS_TO_EXTRACT) {
-                log.info("DTW = " + entry.getKey() + " " + entry.getValue().toString());
+        for (SignatureJSONBean bean : jsonBeans)        // for each in dataBase
+        {
+            dbLength = bean.getX().length;
+
+            //macierz kosztów
+            double[][] costMatrix = new double[localLenght][dbLength];
+
+            for (int i = 0; i < localLenght; i++) {
+                for (int j = 0; j < dbLength; j++) {
+
+                    double[] localVector = {x[i], y[i], p[i]};
+                    double[] dbVector = {bean.getX()[j], bean.getY()[j], bean.getP()[j]};
+
+                    if (i == 0 && j == 0) {
+                        costMatrix[i][j] = distance3d(localVector, dbVector);
+                    } else if (i == 0 && j != 0) {
+                        costMatrix[i][j] = distance3d(localVector, dbVector) + costMatrix[i][j - 1];
+                    } else if (i != 0 && j == 0) {
+                        costMatrix[i][j] = distance3d(localVector, dbVector) + costMatrix[i - 1][j];
+                    } else {
+                        ArrayList<Double> tmp = new ArrayList<>();
+                        tmp.add(costMatrix[i][j - 1]);
+                        tmp.add(costMatrix[i - 1][j - 1]);
+                        tmp.add(costMatrix[i - 1][j]);
+
+                        costMatrix[i][j] =
+                                distance3d(localVector, dbVector) + Collections.min(tmp);
+                    }
+                }
             }
+
+            log.info("db " + index + ": " + dbLength + ", DTW: " + costMatrix[localLenght - 1][dbLength - 1]);
+            competition.put(costMatrix[localLenght - 1][dbLength - 1], bean);
             index++;
         }
 
-        Label selectedUserInfo = ((Label)mainPane.lookup("#selectedUser"));
-//        if(selectedSignature != null) {
-//            selectedUserInfo.setText(selectedSignature.getName() + " " + " Wynik DTW: " + prevDTW);
-//        } else {
-//            selectedUserInfo.setText("Uzytkownik nie znaleziony! Dodaj informacje do bazy");
-//        }
+       int indx = 0;
+        for (Map.Entry<Double, SignatureJSONBean> entry : competition.entrySet()) {
+            if (indx < ITEMS_TO_EXTRACT) {
+                if (entry.getKey() < 5000)
+                {
 
+                    log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
+
+                }
+                else log.info("Uzytkownik nieznany, DTW = " + entry.getKey());
+            }
+            indx++;
+        }
+
+        Label selectedUserInfo = ((Label) mainPane.lookup("#selectedUser"));
         return null;
     }
 
-    private TimeSeries getTimeSeries(double[] fromBean) {
+    private double distance3d(double x[], double y[]) {
+        return Math.sqrt(
+                Math.pow((x[0] - y[0]), 2) +           //x
+                        Math.pow((x[1] - y[1]), 2) +   //y
+                        Math.pow((x[2] - y[2]), 2)     //p
+        );
+    }
+
+   private TimeSeries getTimeSeries(double[] fromBean) {
 
         List<TimeSeriesItem> items = new ArrayList<>();
-        for(int i = 0; i < fromBean.length; ++i) {
+        for (int i = 0; i < fromBean.length; ++i) {
             items.add(new TimeSeriesItem(i, new TimeSeriesPoint(new double[]{fromBean[i]})));
         }
         TimeSeries ts = new TimeSeriesBase(items);
         return ts;
-
     }
 
     private List<SignatureJSONBean> getAll() {

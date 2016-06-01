@@ -88,15 +88,15 @@ public class Signature {
         log.info("Zero PRESSURE count: " + nullItems);
 
         //===================== delete zeroes in characteristics
-//        for (Map.Entry<SignatureCharacteristics, List<Double>> entry : characteristics.entrySet()) {
-//
-////            log.info("Charcteristic length: "+entry.getValue().size());
-//
-//            for (int i = 0; i < nullItems; i++)
-//                entry.getValue().remove(entry.getValue().size() - 1);
-//
-////            log.info("Charcteristic length: "+entry.getValue().size());
-//        }
+        for (Map.Entry<SignatureCharacteristics, List<Double>> entry : characteristics.entrySet()) {
+
+//            log.info("Charcteristic length: "+entry.getValue().size());
+
+            for (int i = 0; i < nullItems; i++)
+                entry.getValue().remove(entry.getValue().size() - 1);
+
+//            log.info("Charcteristic length: "+entry.getValue().size());
+        }
 
         //===================== translateCharacteristics (X,Y)
 
@@ -108,7 +108,7 @@ public class Signature {
     }
 
     private void translateCharacteristic(List<Double> characteristic) {
-        log.info(Arrays.toString(characteristic.stream().toArray()));
+//        log.info(Arrays.toString(characteristic.stream().toArray()));
         double minimumValue = Collections.min(characteristic);
 //        Collections.min(characteristics.get(SignatureCharacteristics.Y));
 //        log.info("\tminimym Value: "+ minimumValue);

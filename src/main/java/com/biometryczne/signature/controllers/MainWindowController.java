@@ -84,7 +84,7 @@ public class MainWindowController implements Initializable {
 
 
     private void addTableView() {
-
+/*
         fxTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -94,7 +94,7 @@ public class MainWindowController implements Initializable {
                 }
             }
         });
-
+*/
         TableColumn firstNameCol = new TableColumn<>("Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory("name"));
 

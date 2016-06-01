@@ -35,13 +35,13 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     private JComponent createJComponent() {
         CanvasPanel canvasPanel = new CanvasPanel();
         canvasPanel.setMinimumSize(new Dimension(penPanelWidth, penPanelHeight));
-        canvasPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 5));
+        canvasPanel.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 5));
         return canvasPanel;
     }
 
     public void penButtonEvent(PButtonEvent ev) {
         allowWriting = true;
-        log.info("\tMozna Pisać");
+//        log.info("\tMozna Pisać");
     }
 
     public void penKindEvent(PKindEvent ev) {
@@ -69,10 +69,8 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
         if (ev.pen.getLevelValue(PLevel.Type.X) < 5 | ev.pen.getLevelValue(PLevel.Type.X) > penPanelWidth - 5
                 | ev.pen.getLevelValue(PLevel.Type.Y) < 5 | ev.pen.getLevelValue(PLevel.Type.Y) > penPanelHeight - 5) {
             allowWriting = false;
-            log.info("\tNIE Mozna Pisać");
+//            log.info("\tNIE Mozna Pisać");
         }
-
-
     }
 
     public void penScrollEvent(PScrollEvent ev) {
@@ -87,6 +85,9 @@ public class JavaFXPenNode extends SwingNode implements PenListener, ICanvasOper
     public void filterSignatureData() {
         log.info("Filtering data");
         signature.filterCharacteristics();
+
+        ((CanvasPanel) getContent()).setSignature(signature);
+        getContent().repaint();
     }
 
     @Override

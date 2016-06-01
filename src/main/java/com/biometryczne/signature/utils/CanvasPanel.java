@@ -26,21 +26,22 @@ public class CanvasPanel extends JPanel{
 
         g2d.setStroke(new BasicStroke(2));
         int characteristicLength = signature.get(SignatureCharacteristics.X).size();
-        log.info(characteristicLength + "");
+//        log.info(characteristicLength + "");
         if (characteristicLength >1) {
             for (int i = 1; i < characteristicLength; i++) {
+
                 float tmpP = (signature.get(SignatureCharacteristics.PRESSURE).get(i).floatValue());
-                log.info(tmpP + "");
 
                 g2d.setColor(new Color(tmpP, 0, 0));
 
-//                if (tmpP > 0) {
+                int offset = 0;
+                if (tmpP > 0) {
                     g2d.drawLine(
-                            signature.get(SignatureCharacteristics.X).get(i).intValue()+10,
-                            signature.get(SignatureCharacteristics.Y).get(i).intValue()+10,
-                            signature.get(SignatureCharacteristics.X).get(i - 1).intValue()+10,
-                            signature.get(SignatureCharacteristics.Y).get(i - 1).intValue()+10);
-//                }
+                            signature.get(SignatureCharacteristics.X).get(i).intValue()+offset,
+                            signature.get(SignatureCharacteristics.Y).get(i).intValue()+offset,
+                            signature.get(SignatureCharacteristics.X).get(i - 1).intValue()+offset,
+                            signature.get(SignatureCharacteristics.Y).get(i - 1).intValue()+offset);
+                }
             }
         }
     }
