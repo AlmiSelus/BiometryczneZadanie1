@@ -90,13 +90,7 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
        int indx = 0;
         for (Map.Entry<Double, SignatureJSONBean> entry : competition.entrySet()) {
             if (indx < ITEMS_TO_EXTRACT) {
-                if (entry.getKey() < 5000)
-                {
-
-                    log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
-
-                }
-                else log.info("Uzytkownik nieznany, DTW = " + entry.getKey());
+                log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
             }
             indx++;
         }
@@ -124,7 +118,7 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
     }
 
     private List<SignatureJSONBean> getAll() {
-        List<SignatureJSONBean> response = new ArrayList<>();
+        List<SignatureJSONBean> response;
         Session s = sessionFactory.openSession();
         Criteria c = s.createCriteria(SignatureJSONBean.class);
         response = c.list();

@@ -2,20 +2,21 @@ package com.biometryczne.signature.controllers;
 
 import com.biometryczne.signature.beans.SignatureJSONBean;
 import com.biometryczne.signature.controllers.actions.*;
+import com.biometryczne.signature.controllers.actions.AudioAction.OnAudioListener;
 import com.biometryczne.signature.dao.SignatureDAO;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
 import com.biometryczne.signature.utils.SignatureEntry;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
@@ -28,6 +29,7 @@ import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -35,7 +37,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Almi on 2016-05-09.
  */
-public class MainWindowController implements Initializable {
+public class MainWindowController implements Initializable, OnAudioListener {
 
     private final static Logger log = LoggerFactory.getLogger(MainWindowController.class);
 
@@ -51,6 +53,12 @@ public class MainWindowController implements Initializable {
     @FXML
     private TableView fxTable;
 
+    @FXML
+    private Button recordButton;
+
+    @FXML
+    private Button playButton;
+
     private ObservableList<SignatureEntry> data = FXCollections.observableArrayList();
 
     private ControllerActionManager actionManager = new ControllerActionManager();
@@ -58,6 +66,10 @@ public class MainWindowController implements Initializable {
     private SessionFactory sessionFactory;
 
     private SignatureDAO signatureDAO;
+
+    private ByteArrayOutputStream out;
+
+    private boolean isRecording = false;
 
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -77,6 +89,8 @@ public class MainWindowController implements Initializable {
         for(SignatureJSONBean bean : list) {
             data.add(new SignatureEntry(bean.getId(), bean.getName()));
         }
+
+        playButton.setDisable(true);
 
     }
 
@@ -259,5 +273,34 @@ public class MainWindowController implements Initializable {
         double[] p = mainSignatureCanvas.getCanvasValuesAsArray(SignatureCharacteristics.PRESSURE);
         actionManager.setPerformer(new ComputeCorrelationAction(x, y, p, sessionFactory));
         actionManager.perform(mainWindow);
+    }
+
+    private CaptureAudioAction captureAudioAction;
+
+    @FXML
+    public void recordAudio() {
+        if(captureAudioAction == null) {
+            captureAudioAction = new CaptureAudioAction(true, this);
+            recordButton.setText("Zakończ nagrywanie dźwięku");
+            playButton.setDisable(true);
+        } else {
+            captureAudioAction.stopRecording();
+            recordButton.setText("Rozpocznij nagrywanie dźwięku");
+//            playButton.setDisable(false);
+        }
+        actionManager.setPerformer(captureAudioAction);
+        actionManager.perform(mainWindow);
+    }
+
+    @FXML
+    public void playAudio() {
+        actionManager.setPerformer(new PlayAudioAction(out));
+        actionManager.perform(mainWindow);
+    }
+
+    @Override
+    public void onCaptured(ByteArrayOutputStream outputStream) {
+        this.out = outputStream;
+        playButton.setDisable(false);
     }
 }
