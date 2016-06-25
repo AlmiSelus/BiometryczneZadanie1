@@ -5,12 +5,14 @@ import com.biometryczne.signature.controllers.actions.*;
 import com.biometryczne.signature.controllers.actions.AudioAction.OnAudioListener;
 import com.biometryczne.signature.dao.SignatureDAO;
 import com.biometryczne.signature.nodes.JavaFXPenNode;
+import com.biometryczne.signature.sound.FundamentalFrequencyAnalyzer;
+import com.biometryczne.signature.sound.IAnalyzer;
 import com.biometryczne.signature.utils.Signature;
 import com.biometryczne.signature.utils.SignatureCharacteristics;
 import com.biometryczne.signature.utils.SignatureEntry;
+import com.biometryczne.signature.utils.SoundUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -302,5 +304,7 @@ public class MainWindowController implements Initializable, OnAudioListener {
     public void onCaptured(ByteArrayOutputStream outputStream) {
         this.out = outputStream;
         playButton.setDisable(false);
+        IAnalyzer analyzer = new FundamentalFrequencyAnalyzer();
+        analyzer.analyze(SoundUtils.convertToDouble(out.toByteArray()));
     }
 }
