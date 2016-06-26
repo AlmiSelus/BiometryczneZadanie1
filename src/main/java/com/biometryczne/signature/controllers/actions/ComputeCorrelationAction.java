@@ -7,6 +7,7 @@ import com.fastdtw.timeseries.TimeSeriesBase;
 import com.fastdtw.timeseries.TimeSeriesItem;
 import com.fastdtw.timeseries.TimeSeriesPoint;
 import com.fastdtw.util.EuclideanDistance;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import org.hibernate.Criteria;
@@ -87,15 +88,49 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
         }
 
        int indx = 0;
+        Map<Double, String> users = new HashMap<>();
         for (Map.Entry<Double, SignatureJSONBean> entry : competition.entrySet()) {
             if (indx < ITEMS_TO_EXTRACT) {
                 if(entry.getKey() < 5000) {
                     log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
+                    users.put(entry.getKey(), entry.getValue().getName());
+                    indx++;
                 } else {
                     log.info("Nie znaleziono dopasowania");
                 }
             }
-            indx++;
+        }
+
+        String name = "";
+        double dtw = 0;
+        boolean found = false;
+        for(Map.Entry<Double, String> user : users.entrySet()) {
+            int checkCount = 0;
+            for(Map.Entry<Double, String> u2 : users.entrySet()) {
+                if(user != u2 && user.getValue().equals(u2.getValue())) {
+                    checkCount++;
+                }
+            }
+
+            if(checkCount == 1) {
+                name = user.getValue();
+                dtw = user.getKey();
+                found = true;
+            }
+        }
+        String title = "Wynik identyfikacji użytkownika";
+        if(found) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(title);
+            alert.setHeaderText(title);
+            alert.setContentText("Użytkownik zidentyfikowany jako " + name + "! (DTW: "+dtw+"%)");
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(title);
+            alert.setContentText("Nie udało się zidentyfikować użytkownika");
+            alert.showAndWait();
         }
 
         Label selectedUserInfo = ((Label) mainPane.lookup("#selectedUser"));
