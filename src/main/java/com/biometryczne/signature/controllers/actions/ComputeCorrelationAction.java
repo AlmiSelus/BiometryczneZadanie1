@@ -42,7 +42,6 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
     @Override
     public Void perform(Pane mainPane) {
 
-
         Map<Double, SignatureJSONBean> competition = new TreeMap<>();
 
         jsonBeans = getAll();
@@ -90,7 +89,11 @@ public class ComputeCorrelationAction implements IControllerAction<Void> {
        int indx = 0;
         for (Map.Entry<Double, SignatureJSONBean> entry : competition.entrySet()) {
             if (indx < ITEMS_TO_EXTRACT) {
-                log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
+                if(entry.getKey() < 5000) {
+                    log.info(entry.getValue().getName() + ", DTW = " + entry.getKey());
+                } else {
+                    log.info("Nie znaleziono dopasowania");
+                }
             }
             indx++;
         }

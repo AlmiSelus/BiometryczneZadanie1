@@ -27,20 +27,10 @@
                         <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
                     </rowConstraints>
                     <children>
-                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Dodaj"
-                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Usuń"
-                                GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
                         <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zapisz"
-                                GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#addToDatabase"/>
                         <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Wczytaj"
-                                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
-                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Pokaż"
-                                GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zmien Nazwę"
-                                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="loadButton" onAction="#loadFromDatabase"/>
                     </children>
                     <padding>
                         <Insets top="20.0"/>
@@ -52,12 +42,15 @@
         </BorderPane>
     </left>
     <center>
+        <VBox fx:id="soundChartsVBox"/>
+    </center>
+    <right>
         <VBox>
             <children>
-                <Button fx:id="recordButton" onAction="#recordAudio" text="Rozpocznij nagrywanie dźwięku"/>
-                <Button fx:id="playButton" onAction="#playAudio" text="Odtwórz dźwięk"/>
-                <Button onAction="#identify" text="Identify user"/>
+                <Button fx:id="recordButton" onAction="#recordAudio"/>
+                <Button fx:id="playButton" onAction="#playAudio"/>
+                <Button fx:id="identifyButton" onAction="#identify"/>
             </children>
         </VBox>
-    </center>
+    </right>
 </BorderPane>

@@ -27,12 +27,9 @@ public class SignatureRecognizer extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Biometryczne - Zadanie 1");
         primaryStage.show();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent t) {
-                Platform.exit();
-                System.exit(0);
-            }
+        primaryStage.setOnCloseRequest(t -> {
+            Platform.exit();
+            System.exit(0);
         });
     }
 

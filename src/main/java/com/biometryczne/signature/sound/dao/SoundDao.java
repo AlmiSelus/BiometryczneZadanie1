@@ -1,6 +1,5 @@
 package com.biometryczne.signature.sound.dao;
 
-import com.biometryczne.signature.beans.SignatureJSONBean;
 import com.biometryczne.signature.dao.IDAO;
 import com.biometryczne.signature.sound.VoiceEntry;
 import org.hibernate.Criteria;

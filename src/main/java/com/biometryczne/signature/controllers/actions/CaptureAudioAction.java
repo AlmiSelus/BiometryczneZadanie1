@@ -36,7 +36,7 @@ public class CaptureAudioAction extends AudioAction implements IControllerAction
         try {
             final AudioFormat format = getFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            final TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
             line.start();
             Runnable runner = new Runnable() {
@@ -56,6 +56,7 @@ public class CaptureAudioAction extends AudioAction implements IControllerAction
                         }
                         out.close();
                         audioListener.onCaptured(out);
+                        line.close();
                     } catch (IOException e) {
                         System.err.println("I/O problems: " + e);
                     }

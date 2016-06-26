@@ -17,7 +17,7 @@ public class SoundRecognitionSystem {
     private final static float MIN_SAMPLE_RATE = 8000.f;
     private final SoundDao soundDao;
     private float sampleRate;
-    private boolean universalModelSetByUser = true;
+    private boolean universalModelSetByUser = false;
     private VoiceEntry universalModel;
 
 
@@ -26,11 +26,10 @@ public class SoundRecognitionSystem {
             throw new IllegalArgumentException("SampleRate powinno byc > 8000 Hz");
         }
         this.sampleRate = sampleRate;
-
         this.soundDao = soundDao;
     }
 
-    public VoiceEntry createVoicePrint(String userKey, double[] voiceSample) {
+    public VoiceEntry createVoiceEntry(String userKey, double[] voiceSample) {
         if(userKey == null) {
             throw new NullPointerException("The userKey is null");
         }
@@ -39,7 +38,7 @@ public class SoundRecognitionSystem {
         }
 
         double[] features = extractFeatures(voiceSample, sampleRate);
-        VoiceEntry voicePrint = new VoiceEntry(features, userKey);
+        VoiceEntry voicePrint = new VoiceEntry(features, userKey, voiceSample);
 
         if (!universalModelSetByUser) {
             if (universalModel == null) {
@@ -82,7 +81,7 @@ public class SoundRecognitionSystem {
             throw new IllegalStateException("There is no voice print enrolled in the system yet");
         }
 
-        VoiceEntry voicePrint = new VoiceEntry(extractFeatures(voiceSample, sampleRate), "SampleEntry");
+        VoiceEntry voicePrint = new VoiceEntry(extractFeatures(voiceSample, sampleRate), "SampleEntry", voiceSample);
 
         IDistanceCalculator calculator = new EuclideanDistanceCalculator();
         List<VoiceMatch> matches = new ArrayList<>(soundDao.getAll().size());

@@ -24,6 +24,10 @@ public class VoiceEntry implements Serializable { //cały obiekt w bazie bedziem
     @NotNull
     private double[] features;
 
+    @Column(length = Integer.MAX_VALUE)
+    @NotNull
+    private double[] data;
+
     @Column
     private int meanCount;
 
@@ -34,14 +38,15 @@ public class VoiceEntry implements Serializable { //cały obiekt w bazie bedziem
 
     }
 
-    public VoiceEntry(double[] features, String name) {
+    public VoiceEntry(double[] features, String name, double[] data) {
         this.features = features;
         meanCount = 1;
         this.name = name;
+        this.data = data;
     }
 
     public VoiceEntry(VoiceEntry entry) {
-        this(Arrays.copyOf(entry.features, entry.features.length), entry.getName());
+        this(Arrays.copyOf(entry.features, entry.features.length), entry.getName(), entry.getData());
     }
 
     double getDistance(IDistanceCalculator calculator, VoiceEntry voicePrint) {
@@ -66,5 +71,9 @@ public class VoiceEntry implements Serializable { //cały obiekt w bazie bedziem
 
     public String getName() {
         return name;
+    }
+
+    public double[] getData() {
+        return data;
     }
 }

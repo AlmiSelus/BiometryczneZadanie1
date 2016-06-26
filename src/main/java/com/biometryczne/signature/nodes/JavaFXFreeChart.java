@@ -8,6 +8,7 @@ import org.jfree.chart.ChartPanel;
  */
 public class JavaFXFreeChart extends SwingNode {
     public JavaFXFreeChart(ChartPanel panel) {
+        super();
         setContent(panel);
     }
 }
