@@ -3,22 +3,21 @@ package com.biometryczne.signature.sound;
 import com.biometryczne.signature.sound.distance.IDistanceCalculator;
 import com.sun.istack.internal.NotNull;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by Almi on 2016-06-26.
  */
-@Table(name = "signatures")
+@Table(name = "voices")
 @Entity
 public class VoiceEntry implements Serializable { //cały obiekt w bazie bedziemy trzymac
 
     @Id
-    @Column(unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name="id", nullable = false, unique = true)
     private Integer id;
 
     @Column(length = Integer.MAX_VALUE) //marnowanie pamieci - pomyslec co z tym zrobic

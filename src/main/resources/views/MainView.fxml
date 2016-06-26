@@ -159,16 +159,7 @@
                 </Tab>
                 <Tab text="Drugi krok : Identyfikacja dźwiękowa" >
                     <content>
-                        <BorderPane>
-                            <center>
-                                <VBox>
-                                    <children>
-                                        <Button fx:id="recordButton" onAction="#recordAudio" text="Rozpocznij nagrywanie dźwięku"/>
-                                        <Button fx:id="playButton" onAction="#playAudio" text="Odtwórz dźwięk"/>
-                                    </children>
-                                </VBox>
-                            </center>
-                        </BorderPane>
+                        <fx:include fx:id="soundTab" source="/views/soundTabPage.fxml"/>
                     </content>
                 </Tab>
             </tabs>

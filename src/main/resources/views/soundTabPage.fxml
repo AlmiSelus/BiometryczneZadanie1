@@ -1,0 +1,63 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.geometry.Insets?>
+<BorderPane fx:id="soundWindow" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.biometryczne.signature.controllers.SoundTabController">
+    <left>
+        <BorderPane>
+            <top>
+            </top>
+            <center>
+                <TableView fx:id="soundDatabaseTable" prefWidth="200.0">
+                </TableView>
+            </center>
+            <bottom>                <!-- Buttony -->
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
+                        <RowConstraints prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Dodaj"
+                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Usuń"
+                                GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zapisz"
+                                GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Wczytaj"
+                                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Pokaż"
+                                GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <Button mnemonicParsing="false" prefHeight="20.0" prefWidth="90.0" text="Zmien Nazwę"
+                                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    </children>
+                    <padding>
+                        <Insets top="20.0"/>
+                    </padding>
+                </GridPane>
+            </bottom>
+
+
+        </BorderPane>
+    </left>
+    <center>
+        <VBox>
+            <children>
+                <Button fx:id="recordButton" onAction="#recordAudio" text="Rozpocznij nagrywanie dźwięku"/>
+                <Button fx:id="playButton" onAction="#playAudio" text="Odtwórz dźwięk"/>
+                <Button onAction="#identify" text="Identify user"/>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

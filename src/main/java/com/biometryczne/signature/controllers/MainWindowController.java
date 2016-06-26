@@ -12,6 +12,7 @@ import com.biometryczne.signature.sound.windows.HanningWindow;
 import com.biometryczne.signature.utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -50,7 +51,7 @@ import java.util.ResourceBundle;
 /**
  * Created by Almi on 2016-05-09.
  */
-public class MainWindowController implements Initializable, OnAudioListener, AudioEvent.AudioListener {
+public class MainWindowController implements Initializable {
 
     private final static Logger log = LoggerFactory.getLogger(MainWindowController.class);
 
@@ -67,10 +68,7 @@ public class MainWindowController implements Initializable, OnAudioListener, Aud
     private TableView fxTable;
 
     @FXML
-    private Button recordButton;
-
-    @FXML
-    private Button playButton;
+    private SoundTabController soundTabController;
 
     private ObservableList<SignatureEntry> data = FXCollections.observableArrayList();
 
@@ -79,13 +77,6 @@ public class MainWindowController implements Initializable, OnAudioListener, Aud
     private SessionFactory sessionFactory;
 
     private SignatureDAO signatureDAO;
-
-    private SoundDao soundDao;
-    private SoundRecognitionSystem srs;
-
-    private ByteArrayOutputStream out;
-
-    private boolean isRecording = false;
 
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -96,21 +87,23 @@ public class MainWindowController implements Initializable, OnAudioListener, Aud
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:h2:./signatures");
+//        configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
         configuration.addAnnotatedClass(SignatureJSONBean.class);
-        configuration.addAnnotatedClass(VoiceEntry.class);
+//        configuration.addAnnotatedClass(VoiceEntry.class);
         sessionFactory = configuration.buildSessionFactory();
         signatureDAO = new SignatureDAO(sessionFactory);
-        soundDao = new SoundDao(sessionFactory);
 
-        srs = new SoundRecognitionSystem(44100, soundDao);
+//        soundTabController.setSessionFactory(sessionFactory);
+//        soundTabController.populateTable();
+
 
         List<SignatureJSONBean> list = signatureDAO.getAll();
         for(SignatureJSONBean bean : list) {
             data.add(new SignatureEntry(bean.getId(), bean.getName()));
         }
 
-        playButton.setDisable(true);
+//        playButton.setDisable(true);
 
     }
 
@@ -134,6 +127,7 @@ public class MainWindowController implements Initializable, OnAudioListener, Aud
 
         fxTable.setItems(data);
         fxTable.getColumns().addAll(firstNameCol);
+
     }
 
     @FXML
@@ -294,112 +288,5 @@ public class MainWindowController implements Initializable, OnAudioListener, Aud
         actionManager.setPerformer(new ComputeCorrelationAction(x, y, p, sessionFactory));
         actionManager.perform(mainWindow);
     }
-
-    private CaptureAudioAction captureAudioAction;
-
-    @FXML
-    public void recordAudio() {
-        if(captureAudioAction == null) {
-            captureAudioAction = new CaptureAudioAction(true, this);
-            recordButton.setText("Zakończ nagrywanie dźwięku");
-            playButton.setDisable(true);
-        } else {
-            captureAudioAction.stopRecording();
-            recordButton.setText("Rozpocznij nagrywanie dźwięku");
-//            playButton.setDisable(false);
-        }
-        actionManager.setPerformer(captureAudioAction);
-        actionManager.perform(mainWindow);
-    }
-
-    @FXML
-    public void playAudio() {
-        actionManager.setPerformer(new PlayAudioAction(out));
-        actionManager.perform(mainWindow);
-    }
-
-    @Override
-    public void onCaptured(ByteArrayOutputStream outputStream) throws IOException {
-        this.out = outputStream;
-        playButton.setDisable(false);
-
-        double[] data2 = SoundUtils.convertToDouble(out.toByteArray());
-
-        int lastIndex = Integer.MAX_VALUE;
-        for(int i = data2.length -1; i >= 0; --i) {
-            if(data2[i] == 0.0) {
-                lastIndex = i;
-            } else {
-                break;
-            }
-        }
-
-        double max = Double.MIN_VALUE;
-        double[] data = new double[lastIndex+1];
-        for(int i = 0; i < data.length ;++i) {
-            data[i] = data2[i];
-            if(data[i] > max) {
-                max = data[i];
-            }
-        }
-
-        for(int i = 0; i < data.length; ++i) {
-            data[i] = data[i]/max;
-        }
-
-        log.info(Arrays.toString(data));
-
-        AudioEvent event = new AudioEvent(data);
-        event.setDataForProcessing(0, 0, data.length -1 );
-
-        createChart(data, "Wykres dzwieku w dziedzinie czasu");
-    }
-
-    private void createChart(double[] data, String datasetName) {
-        float[] fdata = new float[data.length];
-        int i = 0;
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
-        for(Double f : data) {
-            fdata[i] = f.floatValue();
-            if(f < min) {
-                min = f;
-            }
-
-            if(f > max ) {
-                max = f;
-            }
-            i++;
-        }
-
-        final DynamicTimeSeriesCollection dataset =
-                new DynamicTimeSeriesCollection(1, data.length, new Millisecond());
-        dataset.setTimeBase(new Millisecond());
-        dataset.addSeries(fdata, 0, "Gaussian data");
-        final JFreeChart result = ChartFactory.createTimeSeriesChart(datasetName, "time", "frequency", dataset, false, true, false);
-        final XYPlot plot = result.getXYPlot();
-        ValueAxis domain = plot.getDomainAxis();
-        domain.setAutoRange(true);
-        ValueAxis range = plot.getRangeAxis();
-        range.setRange(min, max);
-
-        class FramedChart extends ApplicationFrame {
-
-            public FramedChart(String title) {
-                super(title);
-                add(new ChartPanel(result), BorderLayout.CENTER);
-            }
-        }
-        FramedChart demo = new FramedChart("Test");
-        demo.pack();
-        RefineryUtilities.centerFrameOnScreen(demo);
-        demo.setVisible(true);
-    }
-
-    @Override
-    public void onProcessed(AudioEvent event, double[] data, String datasetName) {
-        createChart(data, datasetName);
-    }
-
 
 }
