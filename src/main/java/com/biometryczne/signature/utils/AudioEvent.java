@@ -104,6 +104,6 @@ public class AudioEvent {
 
 
     public interface AudioListener {
-        void onProcessed(AudioEvent event, double[] data);
+        void onProcessed(AudioEvent event, double[] data, String datasetName);
     }
 }

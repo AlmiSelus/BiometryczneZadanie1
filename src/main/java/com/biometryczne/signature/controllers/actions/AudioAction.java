@@ -2,6 +2,7 @@ package com.biometryczne.signature.controllers.actions;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Almi on 2016-06-25.
@@ -18,6 +19,6 @@ public abstract class AudioAction {
     }
 
     public interface OnAudioListener {
-        void onCaptured(ByteArrayOutputStream outputStream);
+        void onCaptured(ByteArrayOutputStream outputStream) throws IOException;
     }
 }
